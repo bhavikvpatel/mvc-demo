@@ -1,0 +1,148 @@
+﻿@model DemoAppMVC.Models.CustomModel
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<div style="margin: 50px;">
+    <ul class="list-unstyled">
+        @*<li><a data-placement="bottom" data-toggle="popover" data-title="Login" data-container="body" type="button" data-html="true" href="#" id="login">More...</a></li>*@
+
+        @*<button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="right" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+                Popover on right
+            </button>*@
+
+    </ul>
+    @*<div id="popover-content" class="hide">
+            <div class="form-group">
+                <select class="form-control">
+                    <option>NA</option>
+                    <option>RU</option>
+                    <option>EU</option>
+                    <option>SEA</option>
+                </select>
+                <input type="text" placeholder="Name" class="form-control" maxlength="5">
+                <button type="submit" class="btn btn-primary">Go To Login »</button>
+            </div>
+        </div>*@
+
+    <div class="col-md-6 col-xs-6" style="margin-bottom:10px !important;">
+        <div class="well">
+            <ul class="ch-grid">
+                <li>
+                    <a href="/pooldeck/garagesale">
+                        <div class="ch-item ch-img-8" id="icon_l">
+                            <div class="ch-info"></div>
+                        </div>
+                        <span class="header1" id="icon_text1">Garage Sale</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6 col-xs-6" style="margin-bottom:10px !important;">
+        <div class="well">
+            <ul class="ch-grid">
+                <li>
+                    <a href="/pooldeck/garagesale">
+                        <div class="ch-item ch-img-8" id="icon_l">
+                            <div class="ch-info"></div>
+                        </div>
+                        <span class="header1" id="icon_text1">Garage Sale</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6 col-xs-6" style="margin-bottom:10px !important;">
+        <div class="well">
+            <ul class="ch-grid">
+                <li>
+                    <a href="/pooldeck/garagesale">
+                        <div class="ch-item ch-img-8" id="icon_l">
+                            <div class="ch-info"></div>
+                        </div>
+                        <span class="header1" id="icon_text1">Garage Sale</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6 col-xs-6" style="margin-bottom:10px !important;">
+        <div class="well">
+            <ul class="ch-grid">
+                <li>
+                    <a href="/pooldeck/messageboard">
+                        <div class="ch-item ch-img-7" id="icon_l">
+                            <div class="ch-info"></div>
+                        </div>
+                        <span class="header1" id="icon_text1">Message boards</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        </div>
+    <div class="col-md-6 col-xs-6" style="margin-bottom:10px !important;">
+        <div class="well">
+            <ul class="ch-grid">
+                <li>
+                    <a href="/pooldeck/garagesale">
+                        <div class="ch-item ch-img-8" id="icon_l">
+                            <div class="ch-info"></div>
+                        </div>
+                        <span class="header1" id="icon_text1">Garage Sale</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6 col-xs-6" style="margin-bottom:10px !important;">
+        <div class="well">
+            <ul class="ch-grid">
+                <li>
+                    <a href="/pooldeck/garagesale">
+                        <div class="ch-item ch-img-8" id="icon_l">
+                            <div class="ch-info"></div>
+                        </div>
+                        <span class="header1" id="icon_text1">Garage Sale</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <script>
+        $(document).ready(function () {
+            
+            var url = '/Demo/ContentMethod';
+            $.ajax({
+                cache: false,
+                url: url,
+                async: true,
+                success: function (result) {
+                    debugger
+                    var strJson = JSON.stringify(result);
+                    //var strConverted = strJson.replace(/\\&/g, "\\&");
+                    //var data = $.parseJSON('[' + strConverted + ']')[0];
+                    //if ((data != "") && (data != 'undefined') && (data != null)) {
+                    //    $('#hdnRetrievedRowCount').val(parseInt($('#hdnRetrievedRowCount').val()) + parseInt(data.length));
+                    //    $('#lblNoOfRecords').text("(" + $('#hdnRetrievedRowCount').val() + " out of " + $('#hdnTotalRowCount').val() + ")");
+                    //    if (!(parseInt($('#hdnTotalRowCount').val()) > parseInt($('#hdnRetrievedRowCount').val()))) {
+                    //        $('#btnMore').css('display', 'none');
+                    //    }
+                    //    Grid(data);
+                    //}
+                    //else {
+                    //    window.location.reload();
+                    //}
+                },
+                error: function (x) {
+                    debugger
+                    window.location.reload();
+                }
+            });
+        });
+    </script>
+</div>
+
+
+

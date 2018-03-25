@@ -1,0 +1,249 @@
+﻿@using DemoAppMVC;
+@model DemoAppMVC.Models.BaseViewModel
+@{
+    var minimalCount = 5;
+    int noOfColumns = 3;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+
+    <link href="~/Scripts/Custom/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/Custom/jquery.min.js"></script>
+    <script src="~/Scripts/Custom/bootstrap.min.js"></script>
+
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/MIS/jquery-ui-1.9.2.js"></script>
+
+    @*<link href="~/Scripts/MIS/bootstrap.css" rel="stylesheet" />
+        <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/MIS/jquery-1.8.3.js"></script>
+        <script src="~/Scripts/MIS/jquery-ui-1.9.2.js"></script>
+        <script src="~/Scripts/MIS/bootstrap.js"></script>*@
+
+
+    <link href="~/Content/custom.css" rel="stylesheet" />
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div class="">
+        <nav class="navbar navbar-default sidebar" style="margin-bottom: 0px;" role="navigation">
+            <div class="container-fluid">
+                <h2>@Model.Name</h2>
+            </div>
+        </nav>
+    </div>
+    <div class="main-container" id="main-container">
+        <div class="">
+            <div class="col-md-2 sidebar" id="sidebar" style="background-color: #f8f8f8;border-color: #e7e7e7;padding-right: 0px;">
+                <!--Render Filter Controls here-->
+                <form style="margin: 10px;" id="@(Model.FilterFormDetails.FormId)" action="@(Model.FilterFormDetails.FormAction)" method="@(Model.FilterFormDetails.FormMethod)" name="@(Model.FilterFormDetails.FormName)">
+
+                    <ul class="nav nav-list">
+                        @foreach (var filter in Model.CustomFilters)
+                        {
+                            <li class="active">
+                                <a href="#" class="dropdown-toggle"><i class="icon-dashboard"></i><span class="menu-text">@((filter.ControlType == ApplicationConstants.TextBox && filter.FilterFieldName == "SearchText") ? "" : filter.FilterTitle)</span></a>
+                                <ul class="submenu" style='@((filter.ControlType == ApplicationConstants.TextBox && filter.FilterFieldName=="SearchText") ? "list-style: none; padding-left: 0px;" : "list-style: none; ")'>
+
+                                    @switch (filter.ControlType)
+                                    {
+                                        case ApplicationConstants.Checkbox:
+                                            foreach (var option in filter.Options.Take(minimalCount))
+                                            {
+                                                <li>
+                                                    <input type="checkbox" name="@filter.FilterFieldName" id="@option.ObjectId" value="@option.ObjectId" title="@option.ObjectName" checked="@filter.SelectedOptions.Contains(option.ObjectId)" /><span> @option.ObjectName</span> @if (@filter.IsShowCount)
+                                                    {<span style="margin-left: 5px;">[@option.RecordCounts]</span>}
+                                                </li>
+                                            }
+                                            break;
+                                        case ApplicationConstants.Radiolist:
+                                            foreach (var option in filter.Options.Take(minimalCount))
+                                            {
+                                                <li>
+                                                    <input type="radio" name="@filter.FilterFieldName" id="@option.ObjectId" value="@option.ObjectId" title="@option.ObjectName" checked="@filter.SelectedOptions.Contains(option.ObjectId)" /> <span> @option.ObjectName</span> @if (@filter.IsShowCount)
+                                                    {<span style="margin-left: 5px;">[@option.RecordCounts]</span>}
+                                                </li>
+                                            }
+                                            break;
+                                        case ApplicationConstants.TextBox:
+                                            <li>
+                                                <input type="text" class="form-control" value="@filter.DefaultTextValue" placeholder="@filter.PlaceHolder" name="@filter.FilterFieldName" id="@filter.FilterId" />
+                                            </li>
+                                            break;
+                                        case ApplicationConstants.DropdownList:
+                                            <li>
+                                                <select name="@filter.FilterFieldName" class="form-control" id="@filter.FilterFieldName">
+                                                    @foreach (var option in filter.Options)
+                                                    {
+                                                        if (filter.SelectedOptions.FirstOrDefault() != null && option.ObjectId.Equals(filter.SelectedOptions.FirstOrDefault()))
+                                                        {
+                                                            <option value="@option.ObjectId" selected> @option.ObjectName </option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@option.ObjectId"> @option.ObjectName </option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </li>
+                                            break;
+                                        case ApplicationConstants.RangeSlider:
+                                            <li>
+                                                <label id="lbl_@filter.FilterFieldName"> @filter.FilterRangeDefaultMinValue - @filter.FilterRangeDefaultMaxValue</label>
+                                                <div id="div_@filter.FilterFieldName" style="margin: 5px 5px;"></div>
+                                                <input type="hidden" name="@filter.FilterFieldName" id="hidden_@filter.FilterFieldName" />
+                                                <script>
+                                                    $(function () {
+                                                        var sliderDiv = $("#div_@filter.FilterFieldName");
+                                                        $("#div_@filter.FilterFieldName").slider({
+                                                            range: true,
+                                                            min: @filter.FilterRangeMinValue,
+                                                            max: @filter.FilterRangeMaxValue,
+                                                            values: [@filter.FilterRangeDefaultMinValue,  @filter.FilterRangeDefaultMaxValue],
+                                                            slide: function (event, ui) {
+                                                                $("#hidden_@filter.FilterFieldName").val(ui.values[0] + "-" + ui.values[1]);
+                                                                $("#lbl_@filter.FilterFieldName").html(ui.values[0] + " - " + ui.values[1]);
+                                                            }
+                                                        });
+                                                        var sliderValues = $("#div_@filter.FilterFieldName").slider('values');
+                                                        if(sliderValues != null && sliderValues.length>0)
+                                                            $("#hidden_@filter.FilterFieldName").val(sliderValues[0] + "-" + sliderValues[1])
+                                                    });
+                                                </script>
+                                            </li>
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                </ul>
+                                @if (filter.Options != null && filter.Options.Count > minimalCount && filter.IsShowMore)
+                                {
+                                    var splittedList = filter.Options.Skip(minimalCount).Select((x, i) => new { Index = i, Value = x }).GroupBy(x => x.Index / (int)(Math.Ceiling((decimal)filter.Options.Skip(minimalCount).Count() / (decimal)noOfColumns))).Select(x => x.Select(v => v.Value).ToList()).ToList();
+
+                                    <a data-placement="right" data-toggle="popover" type="button" data-title="@filter.FilterTitle" data-container="body" data-html="true" href="#" id="@(filter.FilterFieldName)" style="text-align: right;">More...</a>
+                                    <div class="my-popover-content">
+                                        <div style="margin:10px;">
+                                            <div class="row">
+                                                <div class="">
+                                                    <div class="col-md-6">
+                                                        <input class="form-control" name="sreachtext" type="text" placeholder="Search..." />
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <input class="btn btn-primary" type="button" value="Search" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <ul class="nav nav-pills">
+                                                        @foreach (var alphabet in FilterAlphabets.Alphabets)
+                                                        {
+                                                            <li class='@(filter.Options.Skip(minimalCount).Where(x => x.ObjectName.StartsWith(alphabet.ToString())).Count() > 0 ? "" : "disabled")'>
+                                                                <a onclick='filterBasedOnAlphabet(this,"@alphabet", "@filter.FilterTitle");' class="alphabet" id="alpha_@alphabet"> @alphabet</a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                            <div class="row popoverDiv">
+                                                @for (var i = 0; i < splittedList.Count; i++)
+                                                {
+                                                    <div class="col-md-@((i == splittedList.Count - 1) ? (12 / noOfColumns) + (12 % noOfColumns) : 12 / noOfColumns)">
+                                                        @for (int j = 0; j < splittedList[i].Count; j++)
+                                                        {
+                                                            <div>
+                                                                <input type="checkbox" id="filter_@splittedList[i][j].ObjectId" value="@splittedList[i][j].ObjectId" title="@splittedList[i][j].ObjectName" checked="@filter.SelectedOptions.Contains(splittedList[i][j].ObjectId)" name="@filter.FilterFieldName" />
+                                                                <span> @splittedList[i][j].ObjectName</span> @if (@filter.IsShowCount)
+                                                                {<span style="margin-left: 5px;">[@splittedList[i][j].RecordCounts]</span>}
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                            <hr />
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <input class="btn btn-primary pull-right" onclick="applyChanges(this);" type="button" value="Apply" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </li>
+                        }
+                    </ul>
+
+                    <button type="submit" style="margin:10px;" class="btn btn-primary " id="btnSubmit">Apply</button>
+                </form>
+            </div>
+            <div class="col-md-10 container-fluid">
+                <div class="main-content">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover({
+                content: function () {
+                    return $(this).siblings('.my-popover-content').html();
+                }
+            });
+        });
+        $(document).on('click', function (e) {
+            $('[data-toggle="popover"],[data-original-title]').each(function () {
+                if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                    (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false
+                }
+            });
+        });
+        function filterBasedOnAlphabet(elem, alphabet, filterName) {
+            var popoverContentDiv = $(elem).closest('div[class=popover-content]');
+            if (popoverContentDiv != null) {
+                var childrenInputElements = popoverContentDiv.find('input[type=checkbox][id^=filter_]');
+                if (childrenInputElements != null && childrenInputElements.length > 0) {
+                    childrenInputElements.each(function (index) {
+                        var parentDiv = $(this).parent().closest('div');
+                        if (parentDiv != undefined) {
+                            parentDiv.removeClass('hide');
+                            if (!childrenInputElements[index].title.toLowerCase().startsWith(alphabet.toLowerCase())) {
+                                parentDiv.addClass('hide');
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        function applyChanges(elem) {
+            var popoverDivElem = $($(elem).parents('div[class="popover-content"]')).find('div.popoverDiv');
+            if (popoverDivElem != null) {
+                var allCheckedCheckboxes = popoverDivElem.find("input:checkbox");
+                if (allCheckedCheckboxes != null && allCheckedCheckboxes.length > 0) {
+                    allCheckedCheckboxes.each(function (index, elem) {
+                        var checkboxElem = $("#" + elem.id);
+                        if (checkboxElem != null) {
+                            if (allCheckedCheckboxes[index].checked == true) {
+                                $(checkboxElem).attr("checked", "checked");
+                            }
+                            else {
+                                $(checkboxElem).removeAttr("checked", "checked");
+                            }
+                        }
+                    });
+                }
+            }
+            $('[data-toggle="popover"],[data-original-title]').each(function () {
+                (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false
+            });
+        }
+    </script>
+</body>
+</html>

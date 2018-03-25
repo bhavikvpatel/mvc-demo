@@ -1,0 +1,152 @@
+﻿@using DemoAppMVC.Models
+@{
+    var filterDetails = new List<FilterDetail>();
+    filterDetails.Add(new FilterDetail() { FilterId = 1, FilterName = "Brands", FilterOptions = new FilterOptions() });
+   // filterDetails.Add(new FilterDetail() { FilterId = 2, FilterName = "Price", FilterOptions = new FilterOptions() });
+    var minimalCount = 4;
+    int noOfColumns = 4;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="~/Scripts/Custom/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/Custom/jquery.min.js"></script>
+    <script src="~/Scripts/Custom/bootstrap.min.js"></script>
+    <script src="~/Scripts/Custom/jquery.tmpl.js"></script>
+    <link href="~/Content/custom.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div class="row">
+        <nav class="navbar navbar-default sidebar" role="navigation">
+            <div class="container-fluid">
+            </div>
+        </nav>
+    </div>
+    <div class="main-container" id="main-container">
+        <div class="row">
+            <div class="col-md-2 sidebar" id="sidebar">
+
+                <ul class="nav nav-list">
+                    @foreach (var filterDetail in filterDetails)
+                    {
+                        <li class="active">
+                            <a href="#" class="dropdown-toggle"><i class="icon-dashboard"></i><span class="menu-text">@filterDetail.FilterName </span></a>
+                            <ul class="submenu" style="list-style: none;">
+                                @foreach (var filter in filterDetail.FilterOptions.Options.Take(minimalCount))
+                                {
+                                    <li><input type="checkbox" checked="@filter.IsChecked" id="filter_@filter.OptionId" /><span> @filter.OptionName </span></li>
+                                }
+                            </ul>
+                            @if (filterDetail.FilterOptions.Options.Count > minimalCount)
+                            {
+                                var splittedList = filterDetail.FilterOptions.Options.Skip(minimalCount).Select((x, i) => new { Index = i, Value = x }).GroupBy(x => x.Index / (int)(Math.Ceiling((decimal)filterDetail.FilterOptions.Options.Skip(minimalCount).Count() / (decimal)noOfColumns))).Select(x => x.Select(v => v.Value).ToList()).ToList();
+
+                                <a data-placement="right" data-toggle="popover" type="button" data-title="@filterDetail.FilterName" data-container="body" data-html="true" href="#" id="@(filterDetail.FilterName)" style="text-align: right;">More...</a>
+                                <div id="popover-content_@(@filterDetail.FilterName)" class="hide">
+                                    <div style="margin:10px;">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <form class="form-inline">
+                                                    <div class="form-group">
+                                                        <input id="sreachtext" class="form-control" name="sreachtext" type="text" placeholder="Search..." />
+                                                    </div>
+                                                    <input class="btn btn-primary" id="phSearchButton" type="button" value="Search" />
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <ul class="nav nav-pills">
+                                                    @foreach (var alphabet in filterDetail.FilterOptions.Alphabets)
+                                                    {
+                                                        <li class='@(filterDetail.FilterOptions.Options.Skip(minimalCount).Where(x => x.OptionName.StartsWith(alphabet.ToString())).Count() > 0 ? "" : "disabled")'>
+                                                            <a onclick='filterBasedOnAlphabet(this,"@alphabet", "@filterDetail.FilterName");' class="alphabet" id="alpha_@alphabet"> @alphabet</a>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            @for (var i = 0; i < splittedList.Count; i++)
+                                            {
+                                                <div class="col-md-@((i == splittedList.Count - 1) ? (12 / noOfColumns) + (12 % noOfColumns) : 12 / noOfColumns)">
+                                                    @for (int j = 0; j < splittedList[i].Count; j++)
+                                                    {
+                                                        <div>
+                                                            <input type="checkbox" checked="@splittedList[i][j].IsChecked" id="filter_@splittedList[i][j].OptionId" name="@splittedList[i][j].OptionName" /> <span> @splittedList[i][j].OptionName</span>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </li>
+                    }
+                </ul>
+                <form action="" method="post" id="submitForm" style="margin: 10px;">
+                    <div class="form-group">
+                        <label>Id:</label>
+                        <input class="form-control" type="text" name="Id" />
+                    </div>
+                    <div class="form-group">
+                        <label> Filter: </label>
+                        <input class="form-control" type="text" name="Filter" />
+                    </div>
+                    <button type="button" id="btnSubmit">Submit</button>
+                </form>
+            </div>
+            <div class="col-md-10 container-fluid">
+                <div class="main-content">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover({
+                content: function () {
+                    return $('#popover-content_' + this.id).html();
+                }
+            });
+
+
+        });
+        $(document).on('click', function (e) {
+            $('[data-toggle="popover"],[data-original-title]').each(function () {
+                if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+                    (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false
+                }
+            });
+        });
+        function filterBasedOnAlphabet(elem,alphabet, filterName ){
+            debugger;
+            var popoverContentDiv = $(elem).closest('div[class=popover-content]');
+           // var popoverContentDiv = $('#popover-content_' +filterName);
+            if(popoverContentDiv != null){
+                var childrenInputElements = popoverContentDiv.find('input[type=checkbox][id^=filter_]');
+                if(childrenInputElements != null && childrenInputElements.length>0){
+                    childrenInputElements.each(function(index) {
+                        var parentDiv = $(this).parent().closest('div');
+                        if(parentDiv != undefined){
+                            parentDiv.removeClass('hide');
+                            if (!childrenInputElements[index].name.toLowerCase().startsWith(alphabet.toLowerCase())) {
+                                parentDiv.addClass('hide');
+                            }
+                        }
+                    });
+
+                }
+            }
+        }
+    </script>
+</body>
+</html>

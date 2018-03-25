@@ -1,0 +1,119 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<h2>File Upload</h2>
+<h3>@ViewBag.Message</h3>
+
+<form action="/FileUpload/Upload" method="post" enctype="multipart/form-data">
+    @Html.TextBox("file", "", new { type = "file" })
+     <button type="submit" >Upload File</button>
+</form>
+
+
+             <a href="~/Documents/mail.msg">Download Mail</a>
+@Html.ActionLink("Download File", "DownloadFile","FileUpload")
+
+@*<script type='text/x-jquery-tmpl' id='property-template'>
+    <tr>
+        <td>
+            <a href="~/Property/Edit/${PropertyID}" style="cursor:pointer">
+                ${PropertyName}
+            </a><br />
+            <span class="small">${PropStreet} ${State} ${ZipCode}</span>
+            {{if @UserInfo.UserType == @UserType.SiteAdmin}}
+            <input type="hidden" id="PropActive" value="${PropActive}" />
+            {{/if}}
+        </td>
+        <td style="text-align:center">
+            ${PropertyType}
+        </td>
+        {{if @UserInfo.UserType != @UserType.AccountManager}}
+        <td style="text-align:center">
+            {{if AcctMgrID != '' && AccountMgrName != null}}
+            <a href="~/profile/profile/${AcctMgrID}" style="cursor:pointer">
+                ${AccountMgrName}
+            </a><br />
+            <span class="small">${AcctMgrEmail}</span>
+            {{else}}
+            <span>-</span>
+            {{/if}}
+        </td>
+        {{/if}}
+        <td style="text-align:center">
+            {{if PropMgrID != '' && PropertyMgrName != null}}
+            <a href="~/profile/profile/${PropMgrID}" style="cursor:pointer">
+                ${PropertyMgrName}
+            </a><br />
+            <span class="small">${PropMgrEmail}</span>
+            {{else}}
+            <span>-</span>
+            {{/if}}
+        </td>
+        <td style="text-align: center">
+            <div>
+                {{if  IsActive == true}}
+                <span>Yes</span>
+                {{else}}
+                {{if @UserInfo.UserType == @UserType.SiteAdmin}}
+                <a href="~/Property/Review/${PropertyID}" style="cursor:pointer" class="btn btn-primary btn-xs">
+                    Review
+                </a>
+                {{else}}
+                <strong>Pending Activation</strong>
+                {{/if}}
+                {{/if}}
+            </div>
+        </td>
+        <td style="text-align: center">
+            <a href="~/Property/Units/${PropertyID}" style="cursor:pointer" title="Click here to edit,add or occupy your units">
+                ${RentedUnitCount}/${TotalUnitCount}
+            </a><br />
+        </td>
+        <td style="text-align:center">
+            ${MTDReceived}
+        </td>
+        {{if @UserInfo.UserType == @UserType.SiteAdmin}}
+        <td style="text-align:center">
+            {{if IsLegalEntitySetup == true}}
+            <span>${LegalEntitySetupDate}</span>
+            {{else}}
+            <a href="/property/edit/${PropertyID}"><span class="btn btn-primary">Set Up Legal Entity</span></a>
+            {{/if}}
+        </td>
+        <td style="text-align:center">
+            <span>${PropActivatedOn}</span>
+        </td>
+        {{/if}}
+        <td style="text-align:center">
+            {{if @UserInfo.UserType == @UserType.SiteAdmin || @UserInfo.UserType == @UserType.PropertyManager}}
+            {{if  IsUnderSubscription != null && IsUnderSubscription== true && (PropActive == @Property.Prop_Active || PropActive ==  @Property.Prop_Disabled)}}
+            <a onclick="cancelSubscription('${PropertyID}')"><span class="btn btn-primary"> Cancel Subscription</span></a>
+            {{else IsUnderSubscription != null && IsUnderSubscription== true && PropActive == @Property.Prop_Inactive }}
+            <span> Not Approved </span>
+            {{else IsUnderSubscription != null && IsUnderSubscription== true && PropActive == @Property.Prop_Unsubscribed }}
+            <span>Subscription Cancelled</span>
+            {{else}}
+            <span> Not Applicable </span>
+            {{/if}}
+        </td>
+        <td style="text-align: center;">
+            {{if @UserInfo.UserType == @UserType.SiteAdmin || @UserInfo.UserType == @UserType.PropertyManager}}
+            <a href="~/Property/Edit/${PropertyID}" style="cursor:pointer">
+                <i class="fa fa-pencil" title="Edit Property"></i>
+            </a>
+            {{/if}}
+            {{if @UserInfo.UserType == @UserType.SiteAdmin || @UserInfo.UserType == @UserType.AccountManager}}
+            <a href="~/Property/Fee/${PropertyID}" style="cursor:pointer" title="fee setup">
+                <i class="fa fa-usd"></i>
+            </a>
+            <a href="~/Property/Delete/${PropertyID}" style="cursor:pointer" title="Delete" onclick="return confirm('Are you sure you wish to delete this property?');">
+                <i class="fa fa-trash-o"></i>
+            </a>
+            {{/if}}
+        </td>
+    </tr>
+
+</script>*@

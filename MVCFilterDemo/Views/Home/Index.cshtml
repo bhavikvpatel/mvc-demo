@@ -1,0 +1,123 @@
+﻿@model List<DemoAppMVC.Models.HomeData>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/_Layout.cshtml";
+    var UserType = 1;
+    var SiteAdmin = 1;
+    var PropertyManager = 1;
+}
+
+<h2>Home</h2>
+<h3>@ViewBag.GeneralData</h3>
+
+<div class="row">
+    <label>Submitted Data</label>    <br />
+    <span>Id: @ViewBag.SubmitId</span>
+    <span>Filter Data: @ViewBag.SubmitData</span>
+</div>
+<div class="row">
+    <label>List: </label>
+    <ul>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <li id="@Model[i].DataId">@Model[i].DataDetail</li>
+
+        }
+    </ul>
+</div>
+  <button onclick="getJsonData()">Get Data</button>
+
+<div class="row">
+    <script id="tableRowTemplate" type="text/x-jquery-tmpl">
+        <tr>
+            <td><b>${UserId}</b> </td>   
+            <td>
+                <a href="~/Property/Edit/${UserId}" style="cursor:pointer">
+                    ${UserName}
+                </a><br />
+                <span class="small">${UserName}</span>
+                {{if @UserType == @SiteAdmin}}
+                <input type="hidden" id="UserName" value="${UserName}" />
+                {{/if}}
+            </td> 
+            {{if @UserType == @SiteAdmin && @UserType == @PropertyManager && UserId == 1}}
+            <td style="text-align:center">
+                {{if UserId != '' && UserName != null}}
+                <a href="~/profile/profile/${BrandId}" style="cursor:pointer">
+                    ${UserName}
+                </a><br />
+                <span class="small">${BrandId}</span>
+                {{else}}
+                <span>-</span>
+                {{/if}}
+            </td>
+            {{else}}
+            <td style="text-align:center">${BrandId}</td>
+            {{/if}}  
+            <td>${OperationUnitId}</td>
+            <td>${Gender}</td>
+            <td>${Age}</td>
+            <td>
+            {{if Age>18}}
+                Elder
+            {{else}}
+                Younger
+            {{/if}}
+            </td>
+        </tr>
+    </script>
+    <table  class="table">
+        <thead>
+            <tr>
+                <th> User Id</th>
+                <th> User Name</th>
+                <th style="text-align:center"> Brand Id</th>
+                <th> Operation Unit</th>
+                <th> Gender</th>
+                <th> Age</th>
+                <th> Elder/Younger</th>
+            </tr>
+        </thead>   
+        <tbody id="rowlist">  </tbody>
+    </table>
+   
+</div>
+
+
+
+<script type="text/javascript">
+    getJsonData = function () {
+        $.post("/Home/GetData", function (data) {
+            debugger
+            $("#tableRowTemplate").tmpl(data).appendTo("#rowlist");
+        });
+    }
+    
+
+    $("#btnSubmit").click(function () {
+        debugger
+        var form = $('form#submitForm')[0];
+        if (form != null) {
+            form.action = "/Home/Index"
+            $('form#submitForm').trigger('submit');
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

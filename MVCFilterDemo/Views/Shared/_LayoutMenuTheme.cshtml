@@ -1,0 +1,346 @@
+﻿@using DemoAppMVC;
+@model DemoAppMVC.Models.BaseViewModel
+@{
+    var minimalCount = 3;
+    int noOfColumns = 3;
+}
+<!DOCTYPE html>
+
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width" />
+
+    @*
+        <link href="~/Scripts/Custom/bootstrap.min.css" rel="stylesheet" />
+        <script src="~/Scripts/Custom/jquery.min.js"></script>
+        <script src="~/Scripts/Custom/bootstrap.min.js"></script>
+
+        <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/MIS/jquery-ui-1.9.2.js"></script>*@
+
+    <link href="~/Scripts/MIS/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+
+    <script src="~/Scripts/MIS/jquery-1.8.3.js"></script>
+    <script src="~/Scripts/MIS/jquery-ui-1.9.2.js"></script>
+    <script src="~/Scripts/MIS/bootstrap.js"></script>
+
+
+    <link href="~/assets/core/index-core-style.css" rel="stylesheet" />
+    <link href="~/assets/search/index-search-style.css" rel="stylesheet" />
+    <script src="~/assets/core/core-script.js"></script>
+
+    
+        <link href="~/Content/custom.css" rel="stylesheet" />
+
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div class="page-header">
+        <nav class="navbar navbar-default sidebar" style="margin-bottom: 0px;" role="navigation">
+            <div class="container-fluid">
+                <h2>@Model.Name</h2>
+            </div>
+        </nav>
+    </div>
+    <div class="main-container" id="main-container">
+        <div class="row faceted-search js-faceted-search">
+            <div class="span2 sidebar-s -size-fixed-tablet" style="margin-left: 30px;">
+
+                <!--New code-->
+                <form id="@(Model.FilterFormDetails.FormId)" action="@(Model.FilterFormDetails.FormAction)" method="@(Model.FilterFormDetails.FormMethod)" name="@(Model.FilterFormDetails.FormName)">
+                    <button class="e-btn--3d -width-full" type="submit" style="margin-bottom: 20px;">Apply Search</button>
+                    <div class="search-facet-panel" data-view="searchFacetPanel">
+                        <div class="search-facet">
+                            @{ int index = 0; }
+                            @foreach (var filter in Model.CustomFilters)
+                            {
+                                index++;
+                                <div class="search-facet--no-margin">
+                                    @switch (filter.ControlType)
+                                    {
+                                        case ApplicationConstants.TextBox:
+                                            <div class="search-facet-box" style="@(index == 1 ? " border-top-width: 1px;" : "" )">
+                                                <div class="search-facet-box__inner">
+                                                    <h2 class="search-facet-box__heading"><i class="e-icon @(filter.IconClass) -margin-right white-icon"></i>@filter.FilterTitle</h2>
+                                                    <div class="search-facet-range__inputs">
+                                                        <div class="js-search-facet-range__input search-facet-range__input--with-prefix" style="width:100%">
+                                                            <input type="text" name="SearchText" id="SearchText" placeholder="search here" value="@filter.DefaultTextValue" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            break;
+                                        case ApplicationConstants.RangeSlider:
+                                            <div class="search-facet-box" style="@(index == 1 ? " border-top-width: 1px;border-radius: 5px 5px 0 0;" : "" )">
+                                                <div class="search-facet-box__inner">
+                                                    <h2 class="search-facet-box__heading"><i class="e-icon @(filter.IconClass) -margin-right white-icon"></i>@filter.FilterTitle</h2>
+                                                    <div class="search-facet-range__inputs">
+                                                        <div class="js-search-facet-range__input search-facet-range__input--with-prefix">
+                                                            <label for="age_min">From</label>
+                                                            @*<span>Y.</span>*@
+                                                            <input type="text" name="MinAge" id="minAge" value="@filter.FilterRangeDefaultMinValue" data-view="searchInputValidation" data-validation-message="Please enter minimum age" />
+                                                        </div>
+
+                                                        <div class="js-search-facet-range__input search-facet-range__input--with-prefix">
+                                                            <label for="age_max">To</label>
+                                                            @*<span>Y.</span>*@
+                                                            <input type="text" name="MaxAge" id="maxAge" value="@filter.FilterRangeDefaultMaxValue" data-view="searchInputValidation" data-validation-message="Please enter maximum age" />
+                                                        </div>
+
+                                                        <div class="search-facet-range__input--submit">
+                                                            <button name="button" type="submit" class="btn--size-m-inline no-label js-search-clean-submit">
+                                                                <i class="e-icon -icon-search white-icon">
+                                                                    <span class="e-icon__alt">Apply</span>
+                                                                </i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            break;
+                                        case ApplicationConstants.Checkbox:
+                                        case ApplicationConstants.Radiolist:
+                                            <div class="@(index == 1 ? " js-search-facet-panel__header search-facet-panel__header--start" : "js-search-facet-panel__header search-facet-panel__header" )">
+                                                <h2 data-title="@filter.FilterTitle" class="fiter-title-header"><i class="e-icon @(filter.IconClass) -margin-right white-icon"></i>@filter.FilterTitle</h2>
+                                                @{var filteredOptions = filter.Options.Where(x => filter.SelectedOptions.Contains(x.ObjectId)).ToList();
+                                                    if (filteredOptions.Count < minimalCount)
+                                                    {
+                                                        filteredOptions.AddRange(filter.Options.Where(x => !filter.SelectedOptions.Contains(x.ObjectId)).Take(minimalCount - filteredOptions.Count));
+                                                    }
+                                                    else
+                                                    {
+                                                        filteredOptions = filteredOptions.Take(minimalCount).ToList();
+                                                    }
+                                                }
+                                                @foreach (var option in filteredOptions)
+                                                {
+                                                    <ul class="search-facet-listing">
+                                                        <li>
+                                                            <div class="search-facet-listing__link">
+                                                                <span class="search-facet-listing__label">@option.ObjectName</span>
+                                                                @if (@filter.IsShowCount)
+                                                                { <span class="search-facet-result-count">@option.RecordCounts</span>}
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                }
+                                            </div>
+                                                        break;
+                                                    case ApplicationConstants.DropdownList:
+                                                        <div>
+                                                            <div class="search-facet-header">
+                                                                <h2><i class="e-icon @(filter.IconClass) -margin-right white-icon"></i><span>@filter.FilterTitle</span></h2>
+                                                            </div>
+                                                            <div class="group-select -border-top-none -border-radius-none">
+                                                                <label class="is-visually-hidden" for="@filter.FilterFieldName">@filter.FilterTitle</label>
+                                                                <select name="@filter.FilterFieldName">
+                                                                    @if (filter.SelectedOptions.Count == 0)
+                                                                    {
+                                                                        <option value="" selected="selected">@filter.FilterTitle </option>}
+                                                                    else
+                                                                    {
+                                                                        <option value="">@filter.FilterTitle</option>
+                                                                    }
+                                                                    @foreach (var option in filter.Options)
+                                                                    {
+                                                                        if (filter.SelectedOptions.Contains(option.ObjectId))
+                                                                        {
+                                                                            <option value="@option.ObjectId" selected="selected">@option.ObjectName</option>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <option value="@option.ObjectId">@option.ObjectName</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                            break;
+                                                        default:
+                                                            break;
+                                                    }
+
+                                    @if (filter.IsShowOptionPanel)
+                                    {
+                                        <div class="js-search-facet-panel__body search-facet-panel__body is-visually-hidden--js">
+                                            <div class="search-facet-panel__body-inner">
+                                                <button class="js-search-facet-panel__body-close search-facet-panel__body-close">
+                                                    <i class="e-icon -icon-cancel">
+                                                        <span class="e-icon__alt">Close</span>
+                                                    </i>
+                                                </button>
+                                                <div class="search-facet-panel__breadcrumbs-wrapper">
+                                                    <div class="search-facet-panel__breadcrumbs-intro">
+                                                        <span class="t-body -size-l"><i class="e-icon @(filter.IconClass) -margin-right"></i> @filter.FilterTitle : </span>
+                                                    </div>
+                                                    <div class="search-facet-panel__breadcrumbs"></div>
+                                                    <ul class="nav nav-pills">
+                                                        @foreach (var alphabet in FilterAlphabets.Alphabets)
+                                                        {
+                                                            <li class='@(filter.Options.Where(x => x.ObjectName.StartsWith(alphabet.ToString())).Count() > 0 ? "" : "disabled")'>
+                                                                <a onclick='filterBasedOnAlphabet(this,"@alphabet", "@filter.FilterTitle");' class="alphabet" id="alpha_@alphabet"> @alphabet</a>
+                                                            </li>
+                                                        }
+                                                        <li class="">
+                                                            <a onclick='filterBasedOnAlphabet(this,"reset", "@filter.FilterTitle");' class="alphabet" id="alpha_reset"> All</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <ul class="search-facet-multi-select-in-panel" data-view="multiSelectFacetToggle">
+                                                    @for (var i = 0; i < filter.Options.Count; i++)
+                                                    {
+                                                        string className = (i > ApplicationConstants.ShowDefaultOptionCounts) ? "js-search-facet-multi-select-panel__option search-facet-multi-select-panel__option js-collapsible is-hidden"
+                                                        : "js-search-facet-multi-select-panel__option search-facet-multi-select-panel__option";
+                                                        if (filter.SelectedOptions.Contains(filter.Options[i].ObjectId))
+                                                        {
+                                                            className += " is-active";
+                                                        }
+                                                        <li class="@(className)" style="list-style-type:none;" id="@(filter.Options[i].ObjectName)">
+                                                            <label class="">
+                                                                <div class="search-facet-multi-select-panel__title" style="min-width: 50%; width: 100.0%">
+                                                                    <div class="search-facet-multi-select-panel__title-inner">@filter.Options[i].ObjectName</div>
+                                                                </div>
+                                                                @if (@filter.IsShowCount)
+                                                                {<div class="search-facet-multi-select-panel__count"> @filter.Options[i].RecordCounts</div>}
+                                                                <div class="search-facet-multi-select-panel__status">
+                                                                    <div>
+                                                                        <i class="e-icon -icon-ok"><span class="e-icon__alt">selection active</span></i>
+                                                                    </div>
+                                                                    <div>
+                                                                        <i class="e-icon -icon-cancel"><span class="e-icon__alt">remove selection</span></i>
+                                                                    </div>
+                                                                </div>
+                                                                @if (filter.SelectedOptions.Contains(filter.Options[i].ObjectId))
+                                                                {
+                                                                    <input type="checkbox" name="@filter.FilterFieldName" id="@(filter.FilterFieldName + "-" + filter.Options[i].ObjectName)" value="@filter.Options[i].ObjectId" checked="checked" />
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input type="checkbox" name="@filter.FilterFieldName" id="@(filter.FilterFieldName + "-" + filter.Options[i].ObjectName)" value="@filter.Options[i].ObjectId" />
+                                                                }
+
+                                                            </label>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                                @if (filter.Options.Count > ApplicationConstants.ShowDefaultOptionCounts)
+                                                {
+                                                    <div class="js-search-facet-toggle search-facet-panel-toggle" data-view="facetTogglePanel">
+                                                        <a class="js-search-facet-toggle__link" href="#">
+                                                            <span>
+                                                                <span class="e-icon -icon-preview"></span>
+                                                                <span class="search-facet-panel-toggle__remaining">
+                                                                    Show remaining @(filter.Options.Count - ApplicationConstants.ShowDefaultOptionCounts) options
+                                                                </span>
+                                                            </span>
+                                                            <span>Hide options</span>
+                                                        </a>
+                                                        <div class="search-facet-panel__action">
+                                                            <button class="e-btn--3d -width-full js-search-clean-submit">
+                                                                Done
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="search-facet-panel__action">
+                                                        <button class="e-btn--3d -width-full js-search-clean-submit">
+                                                            Done
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                                    }
+                        </div>
+                    </div>
+
+                    <button class="e-btn--3d -width-full" type="submit">Apply Search</button>
+                </form>
+                <hr class="search-facet-divider">
+                <!-- End of New Code -->
+            </div>
+
+            <div class="span12">
+                <div class="">
+                    <div class="is-hidden--no-js search-facet-horizontal-form -border-bottom" data-view="searchFacetHorizontalForm">
+
+                        <div class="inline-select-wrapper">
+                            <div class="search-facet-header--horizontal">
+                                <h2><i class="e-icon -icon-sort -margin-right"></i><span class="e-icon__alt">Sort by</span></h2>
+                            </div>
+                            <div class="-border-top-none -border-radius-none inline-select">
+                                <label class="is-visually-hidden" for="sort_horizontal">Sort by</label>
+                                <select name="sort_horizontal" id="sort_horizontal" class="js-search-facet-sort-by" data-pjax="">
+                                    <option value="" selected="selected">Sort by: Newest items</option>
+                                    <option value="trending">Trending items</option>
+                                    <option value="sales">Best sellers</option>
+                                    <option value="rating">Best rated</option>
+                                    <option value="price-asc">Price: low to high</option>
+                                    <option value="price-desc">Price: high to low</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="inline-select-wrapper -hide-phone">
+                            <div class="search-facet-header--horizontal">
+                                <h2><i class="e-icon -icon-calendar -margin-right"></i><span class="e-icon__alt">Added</span></h2>
+                            </div>
+
+                            <div class="-border-top-none -border-radius-none inline-select">
+                                <label class="is-visually-hidden" for="date_horizontal">Added</label>
+                                <select name="date_horizontal" id="date_horizontal" class="js-search-facet-date-added" data-pjax="">
+                                    <option value="" selected="selected">Added: Any date</option>
+                                    <option value="this-year" disabled="disabled">In the last year - 0</option>
+                                    <option value="this-month" disabled="disabled">In the last month - 0</option>
+                                    <option value="this-week" disabled="disabled">In the last week - 0</option>
+                                    <option value="this-day" disabled="disabled">In the last day - 0</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="main-content">
+                    @RenderBody()
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="~/assets/search/index-search.js"></script>
+
+    <div data-view="pageViewsTracker"></div>
+    <script>
+        $(function () { viewloader.execute(Views); });
+
+        $(document).ready(function () {
+
+
+        });
+
+    </script>
+    <script>
+        function filterBasedOnAlphabet(elem, alphabet, filterName) {
+            var popoverContentDiv = $(elem).closest('div[class=search-facet-panel__breadcrumbs-wrapper]');
+            if (popoverContentDiv != null) {
+                var childrenInputElements = popoverContentDiv.siblings("ul[class=search-facet-multi-select-in-panel]");
+                var childrenLiElements = childrenInputElements.find('li');
+                if (childrenLiElements != null && childrenLiElements.length > 0) {
+                    childrenLiElements.each(function (index) {
+                        var textContent = this.innerText.trim().toLowerCase();
+                        if (textContent != undefined && textContent != "") {
+                            $(this).removeClass('hide');
+                            if (alphabet.toLowerCase() !== "reset" && !textContent.startsWith(alphabet.toLowerCase())) {
+                                $(this).addClass('hide');
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>

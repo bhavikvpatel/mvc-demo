@@ -1,0 +1,54 @@
+﻿@model DemoAppMVC.Models.UserViewModel
+@{
+    ViewBag.Title = "Pills Design";
+    Layout = "~/Views/Shared/_LayoutMenuTheme.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Pills Design</title>
+    <link href="~/Content/custom.css" rel="stylesheet" />
+</head>
+<body>
+    <h4>Nav Pills Example: </h4>
+    <div class="row">
+        <div class="col-md-6" style="overflow-x: scroll;">
+            <ul class="nav nav-pills" style="display: inline-flex;">
+                @foreach (var alphabet in FilterAlphabets.Alphabets)
+                {
+                    <li>
+                        <a class="alphabet nav-anchor" id="alpha_@alphabet">
+                            <span class="round-tabs three">
+                                @alphabet
+                            </span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <br />
+    <hr />                                 
+    <h4>Widget Example: </h4>
+    <div class="row">
+        <div class="col-md-6" style="">
+            <ul class="nav nav-pills" style="">
+                @foreach (var alphabet in FilterAlphabets.Alphabets)
+                {
+                    <li>
+                        <a class="alphabet nav-anchor" id="alpha_@alphabet">
+                            <span class="square-tabs three">
+                                @alphabet
+                            </span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>

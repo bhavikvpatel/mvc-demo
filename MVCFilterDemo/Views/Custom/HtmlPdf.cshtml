@@ -1,0 +1,10 @@
+﻿@model DemoAppMVC.Models.UserViewModel
+@{
+    ViewBag.Title = "HtmlPdf";
+    Layout = "~/Views/Shared/_LayoutMenuTheme.cshtml";
+}
+
+<h2>HtmlPdf</h2>
+@Html.ActionLink("Convert", "ConvertHtmlPageToPdf", "Custom");
+
+                  @*<button type="button" > Convert </button>*@

@@ -1,0 +1,14 @@
+﻿@model MVCFilterDemo.PaymentModel
+
+@{
+    ViewBag.Title = "Payment";
+    //Layout = "~/Views/Shared/_LayoutMenuTheme.cshtml";
+}
+
+<h2>Payment Via Paypal</h2>
+
+
+<form action="\Custom\Payment" method="post">
+    <label>Credit Card Number: </label><input type="text" name="CreditCardNumber" />
+    <button type="submit">Make Payment</button>
+</form>

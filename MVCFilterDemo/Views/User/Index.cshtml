@@ -1,0 +1,38 @@
+﻿@model DemoAppMVC.Models.UserViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+<div class="span10">
+    <h2>User Table</h2>
+    <p>All are users displayed here.</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>User Id</th>
+                <th>User Name</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Brand Id</th>
+                <th>Operation Unit Id</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{int i = 1; }
+            @foreach (var user in Model.Users)
+            {  
+                <tr>
+                    <td>@(i++)</td>
+                    <td>@user.UserId</td>
+                    <td>@user.UserName</td>
+                    <td>@user.Gender</td>
+                    <td>@user.Age</td>
+                    <td>@user.BrandId</td>
+                    <td>@user.OperationUnitId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
